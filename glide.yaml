@@ -1,0 +1,5 @@
+package: tonic_mongo
+import:
+- package: github.com/spf13/viper
+  version: ~1.0.0
+- package: gopkg.in/mgo.v2
