@@ -8,20 +8,15 @@ import (
 
 var Session *mgo.Session
 
-func InitDatabase() (err error) {
-	isDatabaseSet := configs.IsSet("database")
-	if !isDatabaseSet {
+func InitMongoDB() (err error) {
+	isMongoDBSet := configs.IsSet("mongodb")
+	if !isMongoDBSet {
 		return nil
 	}
 
-	driver := configs.GetString("database.driver")
-	if driver != "mongo" {
-		return errors.New("tonic_mongo_error.database.driver_not_supported")
-	}
-
-	dbstring := configs.GetString("database.dbstring")
+	dbstring := configs.GetString("mongodb.dbstring")
 	if dbstring == "" {
-		return errors.New("tonic_mongo_error.database.empty_dbstring_config")
+		return errors.New("tonic_mongo_error.empty_dbstring_config")
 	}
 
 	session, err := mgo.Dial(dbstring)
