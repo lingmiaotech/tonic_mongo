@@ -1,7 +1,9 @@
 package mongo
 
 import (
+	"errors"
 	"fmt"
+
 	"github.com/lingmiaotech/tonic_mongo/configs"
 	"gopkg.in/mgo.v2"
 )
@@ -20,7 +22,24 @@ func InitMongoDB() (err error) {
 	authSource := configs.GetString("mongodb.authSource")
 	dbArgs := configs.GetString("mongodb.args")
 
-	dbString := fmt.Sprintf("mongodb://%s:%s@%s/%s?%s", username, password, url, authSource, dbArgs)
+	dbString := fmt.Sprintf("mongodb://")
+	if username != "" && password != "" {
+		dbString = fmt.Sprintf("%s%s:%s@", dbString, username, password)
+	}
+
+	if url != "" {
+		dbString = fmt.Sprintf("%s%s", dbString, url)
+	} else {
+		return errors.New("mongo_error.empty_url")
+	}
+
+	if authSource != "" {
+		dbString = fmt.Sprintf("%s/%s", dbString, authSource)
+	}
+
+	if dbArgs != "" {
+		dbString = fmt.Sprintf("%s?%s", dbString, dbArgs)
+	}
 
 	session, err := mgo.Dial(dbString)
 	if err != nil {
