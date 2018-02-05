@@ -1,7 +1,7 @@
 package mongo
 
 import (
-	"errors"
+	"fmt"
 	"github.com/lingmiaotech/tonic_mongo/configs"
 	"gopkg.in/mgo.v2"
 )
@@ -14,12 +14,15 @@ func InitMongoDB() (err error) {
 		return nil
 	}
 
-	dbstring := configs.GetString("mongodb.dbstring")
-	if dbstring == "" {
-		return errors.New("tonic_mongo_error.empty_dbstring_config")
-	}
+	username := configs.GetString("mongodb.username")
+	password := configs.GetDynamicString("mongodb.password")
+	url := configs.GetString("mongodb.url")
+	authSource := configs.GetString("mongodb.authSource")
+	dbArgs := configs.GetString("mongodb.args")
 
-	session, err := mgo.Dial(dbstring)
+	dbString := fmt.Sprintf("mongodb://%s:%s@%s/%s?%s", username, password, url, authSource, dbArgs)
+
+	session, err := mgo.Dial(dbString)
 	if err != nil {
 		return err
 	}
